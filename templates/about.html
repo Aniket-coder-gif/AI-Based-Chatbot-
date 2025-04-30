@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --secondary-color: #e0e7ff;
+            --background-color: #f3f4f8;
+            --container-bg: #ffffff;
+            --text-color: #1f2937;
+            --light-text: #6b7280;
+            --border-color: #e5e7eb;
+            --user-message-bg: #4f46e5;
+            --bot-message-bg: #f3f4f6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --header-height: 70px;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --primary-light: #e0e7ff;
+            --dark-bg-secondary: #1f2937;
+        }
+
+        /* Dark theme variables */
+        body.dark-theme {
+            --background-color: #111827;
+            --container-bg: #1f2937;
+            --text-color: #f9fafb;
+            --light-text: #d1d5db;
+            --border-color: #374151;
+            --bot-message-bg: #2d3748;
+            background-image: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+        }
+
+        body.dark-theme .main-header {
+            background-color: rgba(31, 41, 55, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-theme .logo {
+            color: #8b5cf6;
+        }
+
+        body.dark-theme .main-nav a {
+            color: #e5e7eb;
+        }
+
+        body.dark-theme .main-nav a.active,
+        body.dark-theme .main-nav a:hover {
+            color: #8b5cf6;
+        }
+
+        body.dark-theme .main-nav a.active::after {
+            background-color: #8b5cf6;
+        }
+
+        body.dark-theme .theme-toggle {
+            color: #e5e7eb;
+        }
+
+        body.dark-theme .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #8b5cf6;
+        }
+
+        /* Original about.html styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Main Header styles from index.html */
+        .main-header {
+            background-color: var(--header-bg);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .logo i {
+            color: var(--primary-color);
+        }
+
+        .main-nav ul {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .main-nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .main-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .main-nav a.active {
+            color: var(--primary-color);
+            background-color: var(--primary-light);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.75rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--primary-light);
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Mobile menu styles */
+        @media (max-width: 768px) {
+            .main-nav {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .main-nav.active {
+                display: block;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--header-bg);
+                padding: 1rem;
+            }
+            
+            .main-nav.active ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .header-actions {
+                margin-left: auto;
+            }
+
+            .main-nav.active,
+            .header-actions.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                background-color: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(10px);
+                padding: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+                z-index: 99;
+                animation: slideDown 0.3s ease-out;
+            }
+            
+            .main-nav.active ul {
+                flex-direction: column;
+                width: 100%;
+                gap: 15px;
+            }
+            
+            .header-actions.active {
+                top: calc(var(--header-height) + 172px);
+                padding-top: 0;
+            }
+            
+            .mobile-menu-toggle.active {
+                color: var(--primary-color);
+            }
+            
+            body.dark-theme .main-nav.active,
+            body.dark-theme .header-actions.active {
+                background-color: rgba(31, 41, 55, 0.95);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            }
+            
+            @keyframes slideDown {
+                from { opacity: 0; transform: translateY(-20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border-radius: var(--border-radius);
+            position: relative;
+            overflow: hidden;
+            margin-top: 80px; /* Added to account for fixed header */
+        }
+
+        /* Rest of the original about.html styles */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
+            background-size: cover;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            position: relative;
+        }
+
+        /* Sections */
+        .section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-light);
+            border-radius: 2px;
+        }
+
+        .section p {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .feature-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        .feature-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-card h3 i {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+        }
+
+        .feature-card p {
+            color: var(--dark-color);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Lists - Modified to be more specific to content lists */
+        .section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section ul li {
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .section ul li::before {
+            content: '•';
+            color: var(--primary-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .tech-item {
+            background-color: var(--light-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .tech-item:hover {
+            background-color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(-2px);
+        }
+
+        .tech-item i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3), 0 2px 4px -1px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3), 0 4px 6px -2px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        /* Highlight */
+        .highlight {
+            background-color: rgba(79, 70, 229, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        /* Footer styles from index.html */
+        .main-footer {
+            background-color: #1f2937;
+            color: white;
+            padding: 40px 0 0;
+            margin-top: 80px;
+        }
+
+        .footer-widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 50px;
+            margin-bottom: 20px;
+        }
+
+        .footer-widget h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-widget h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .footer-widget p {
+            color: #d1d5db;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            color: white;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: var(--transition);
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .contact-info {
+            list-style: none;
+        }
+
+        .contact-info li {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            color: #d1d5db;
+        }
+
+        .contact-info i {
+            color: var(--primary-color);
+        }
+
+        .footer-bottom {
+            padding: 20px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-bottom p {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-bottom-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .footer-bottom-links a:hover {
+            color: white;
+        }
+
+        /* Existing footer styles - updated to match index.html */
+        footer {
+            background-color: #1f2937;
+            color: white;
+            padding: 40px 0 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding-bottom: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+        }
+
+        .footer-content .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .footer-content .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .footer-content .footer-links a:hover {
+            color: white;
+        }
+
+        .copyright {
+            font-size: 14px;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section {
+                padding: 2rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-content .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Header - Updated to match index.html -->
+    <header class="main-header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about" class="active">About</a></li>
+                    <!-- <li><a href="#">Support</a></li> -->
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <button class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>About This Project</h1>
+            <p>A modern AI-powered chat application built with Flask and Google's Gemini API</p>
+        </section>
+
+        <section class="section">
+            <h2>Project Overview</h2>
+            <p>This AI Chat Assistant is a web application that leverages the power of Google's Gemini AI to provide intelligent and contextual conversations. The application maintains conversation history, supports multiple user sessions, and offers a seamless chat experience.</p>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <h3><i class="fas fa-robot"></i> AI-Powered</h3>
+                    <p>Utilizes Google's Gemini 1.5 Flash model for intelligent, context-aware responses that maintain conversation history and understand complex queries with remarkable accuracy.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><i class="fas fa-database"></i> Persistent Storage</h3>
+                    <p>Robust data persistence with MongoDB as the primary database, featuring an automatic failover to file-based storage when needed, ensuring your conversations are never lost.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <h3><i class="fas fa-user-shield"></i> Session Management</h3>
+                    <p>Secure session handling with Flask-Session maintains your chat history across browser refreshes while keeping your data isolated and protected.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Technical Details</h2>
+            <p>The application is built with a modern Python stack and designed for reliability with fallback mechanisms for critical components.</p>
+            
+            <h3>Backend Architecture</h3>
+            <ul>
+                <li><strong>Flask</strong> - Lightweight and flexible web framework for routing and request handling</li>
+                <li><strong>Google Gemini API</strong> - State-of-the-art AI text generation with contextual understanding</li>
+                <li><strong>MongoDB</strong> - High-performance NoSQL database with automatic file-based fallback</li>
+                <li><strong>Flask-Session</strong> - Server-side session management with configurable lifetimes</li>
+                <li><strong>Error Handling</strong> - Comprehensive logging and graceful degradation</li>
+            </ul>
+            
+            <h3>Key Features</h3>
+            <ul>
+                <li>Real-time chat interface with persistent conversation history</li>
+                <li>Context-aware responses that remember previous interactions</li>
+                <li>Secure session-based user isolation</li>
+                <li>Health monitoring endpoints for system observability</li>
+                <li>Fully responsive design optimized for all devices</li>
+            </ul>
+            
+            <h3>Technical Stack</h3>
+            <div class="tech-stack">
+                <div class="tech-item"><i class="fab fa-python"></i> Python 3</div>
+                <div class="tech-item"><i class="fas fa-server"></i> Flask</div>
+                <div class="tech-item"><i class="fas fa-database"></i> MongoDB</div>
+                <div class="tech-item"><i class="fab fa-google"></i> Gemini API</div>
+                <div class="tech-item"><i class="fas fa-file-alt"></i> JSON</div>
+                <div class="tech-item"><i class="fab fa-html5"></i> HTML5</div>
+                <div class="tech-item"><i class="fab fa-css3-alt"></i> CSS3</div>
+                <div class="tech-item"><i class="fab fa-js"></i> JavaScript</div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>Development Insights</h2>
+            <p>This project was designed with reliability and user experience as top priorities. The implementation includes several noteworthy architectural decisions:</p>
+            
+            <h3>Fallback Systems</h3>
+            <p>The application's storage system automatically falls back to file-based persistence when MongoDB is unavailable, implemented in the <span class="highlight">database.py</span> module. This ensures uninterrupted service even during database outages.</p>
+            
+            <h3>Session Management</h3>
+            <p>User sessions are maintained server-side with Flask-Session, configured for 7-day persistence. Session data is securely stored in the <span class="highlight">./flask_session</span> directory with automatic cleanup.</p>
+            
+            <h3>Error Handling</h3>
+            <p>A comprehensive error handling system provides detailed logging while presenting user-friendly messages. The system includes automatic recovery mechanisms for common failure scenarios.</p>
+            
+            <a href="/" class="btn"><i class="fas fa-comments"></i> Try the Chat Assistant</a>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-widgets">
+                <div class="footer-widget">
+                    <h3>AI Chat Assistant</h3>
+                    <p>Your intelligent AI companion for quick answers and assistance. Modern technology with AI powered assistant designed by Rakesh and Krishna with ❤️.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div class="footer-widget">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-widget">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i>  Mangalagiri, Neerukonda Street, SRM AP University</li>
+                        <li><i class="fas fa-phone"></i> +91 8522815937</li>
+                        <li><i class="fas fa-envelope"></i> info@aiassistant.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AI Chat Assistant | All Rights Reserved</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Internal JavaScript for theme toggle functionality -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            
+            // Theme toggle functionality
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-theme');
+                const isDarkTheme = document.body.classList.contains('dark-theme');
+                themeToggle.innerHTML = isDarkTheme ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            });
+            
+            // Mobile menu toggle
+            mobileMenuToggle.addEventListener('click', function() {
+                const mainNav = document.querySelector('.main-nav');
+                const headerActions = document.querySelector('.header-actions');
+                
+                mainNav.classList.toggle('active');
+                headerActions.classList.toggle('active');
+                mobileMenuToggle.classList.toggle('active');
+                
+                const isActive = mobileMenuToggle.classList.contains('active');
+                mobileMenuToggle.innerHTML = isActive ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+            });
+            
+            // Add smooth scrolling for nav links
+            document.querySelectorAll('.main-nav a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    // Allow default action for the Home link
+                    if (this.getAttribute('href') === '/') {
+                        return; // Do nothing, let the link work as intended
+                    }
+                    e.preventDefault(); // Prevent default for other links
+                    
+                    // Add active class to clicked link and remove from siblings
+                    document.querySelectorAll('.main-nav a').forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
