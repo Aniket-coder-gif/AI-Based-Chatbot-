@@ -1,0 +1,16 @@
+[
+  {
+    "session_id": "65b5eb60-a4ec-45bf-b3c1-83d425fa69b3",
+    "content": "what is the capital of nepal france and usa",
+    "role": "user",
+    "timestamp": "2025-04-15T12:36:44.629062",
+    "_id": "4cf3dcca-878e-4cfb-bc76-03246595ee1a"
+  },
+  {
+    "session_id": "65b5eb60-a4ec-45bf-b3c1-83d425fa69b3",
+    "content": "Nepal: Kathmandu\nFrance: Paris\nUSA: Washington, D.C.\n",
+    "role": "assistant",
+    "timestamp": "2025-04-15T12:36:45.315619",
+    "_id": "1a23b0c9-efb9-46fe-9dcd-987a7b0a748e"
+  }
+]

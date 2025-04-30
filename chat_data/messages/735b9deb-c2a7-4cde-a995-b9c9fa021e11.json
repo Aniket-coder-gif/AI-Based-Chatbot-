@@ -1,0 +1,16 @@
+[
+  {
+    "session_id": "735b9deb-c2a7-4cde-a995-b9c9fa021e11",
+    "content": "what is my name",
+    "role": "user",
+    "timestamp": "2025-04-15T14:35:28.187176",
+    "_id": "a5ad6d89-608a-472d-8046-75419acd5d77"
+  },
+  {
+    "session_id": "735b9deb-c2a7-4cde-a995-b9c9fa021e11",
+    "content": "I do not know your name.  I have no memory of past conversations.  To know your name, you would have to tell me.\n",
+    "role": "assistant",
+    "timestamp": "2025-04-15T14:35:28.904273",
+    "_id": "74af7331-f209-4850-b5a9-9c5251b48e19"
+  }
+]
